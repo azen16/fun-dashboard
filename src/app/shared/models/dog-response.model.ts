@@ -1,4 +1,6 @@
+import { DogBreed } from "./dog-breed.model";
+
 export interface DogResponse {
-    message: string;
+    message: string[] | string | DogBreed;
     status: string;
 }
