@@ -4,10 +4,11 @@ import { pipe, tap, switchMap, catchError, of } from 'rxjs';
 import { inject } from '@angular/core';
 import { DashboardState } from '../models/dashboard-state';
 import { DogService } from '../../../services/dog-service';
+import { DogBreed } from '../../../shared/models/dog-breed.model';
 
 const initialState: DashboardState = {
   loading: false,
-  currentDog: '',
+  currentDog: {} as DogBreed,
   dogList: []
 };
 
@@ -19,7 +20,17 @@ export const DashboardStore = signalStore(
       pipe(
         tap(() => patchState(store, { loading: true })),
         switchMap(() => dogService.getRandomDog().pipe(
-          tap((res) => patchState(store, { currentDog: typeof (res.message) == 'string' ? res.message : '', loading: false })),
+          tap((res) => {
+            let dog = {} as DogBreed;
+            if (typeof (res.message) == 'string') {
+              let breed = res.message.split('/')[4];
+              dog = {
+                image: res.message,
+                breed,
+              } as DogBreed;
+            }
+            patchState(store, { currentDog: dog, loading: false })
+          }),
           catchError((err) => {
             console.error(err);
             patchState(store, { loading: false });
@@ -33,10 +44,16 @@ export const DashboardStore = signalStore(
       pipe(
         tap(() => patchState(store, { loading: true })),
         switchMap(() => dogService.getBreeds().pipe(
-          tap((res) => patchState(store, {
-            dogList: typeof res.message !== 'string' && !Array.isArray(res.message) ? [res.message] : [],
-            loading: false
-          })),
+          tap((res) => {
+            let dogList: any[] = [];
+            if (typeof res.message !== 'string' && !Array.isArray(res.message)) {
+              dogList = Object.entries(res.message).map(([breed, subBreeds]) => ({
+                breed,
+                subBreeds
+              }));
+            }
+            patchState(store, { dogList, loading: false });
+          }),
           catchError((err) => {
             console.error(err);
             patchState(store, { loading: false });

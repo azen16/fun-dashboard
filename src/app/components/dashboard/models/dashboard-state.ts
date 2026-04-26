@@ -1,7 +1,7 @@
 import { DogBreed } from "../../../shared/models/dog-breed.model";
 
 export interface DashboardState {
-    currentDog: string;
+    currentDog: DogBreed;
     loading: boolean;
     dogList: DogBreed[];
 }

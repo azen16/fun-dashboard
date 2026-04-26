@@ -1,3 +1,5 @@
 export interface DogBreed {
-    [key: string]: string[]
+    breed: string;
+    image: string;
+    subBreeds: string[];
 }
