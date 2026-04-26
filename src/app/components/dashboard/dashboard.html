@@ -5,9 +5,9 @@
     } @else {
     <mat-card>
       <mat-card-header>
-        <mat-card-title>{{ store.currentDog().breed }}</mat-card-title>
+        <mat-card-title>{{ store.currentDog().breed | dogName }}</mat-card-title>
       </mat-card-header>
-      <img mat-card-image [src]="store.currentDog().image" [alt]="store.currentDog().breed">
+      <img mat-card-image [src]="store.currentDog().image" [alt]="store.currentDog().breed | dogName">
     </mat-card>
     }
   </mat-grid-tile>
