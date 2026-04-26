@@ -7,7 +7,6 @@ import { DogService } from '../../../services/dog-service';
 import { DogBreed } from '../../../shared/models/dog-breed.model';
 
 const initialState: DashboardState = {
-  loading: false,
   currentDog: {} as DogBreed,
   dogList: []
 };
@@ -18,7 +17,6 @@ export const DashboardStore = signalStore(
     // Action to fetch a random dog
     fetchRandomDog: rxMethod<void>(
       pipe(
-        tap(() => patchState(store, { loading: true })),
         switchMap(() => dogService.getRandomDog().pipe(
           tap((res) => {
             let dog = {} as DogBreed;
@@ -29,11 +27,10 @@ export const DashboardStore = signalStore(
                 breed,
               } as DogBreed;
             }
-            patchState(store, { currentDog: dog, loading: false })
+            patchState(store, { currentDog: dog })
           }),
           catchError((err) => {
             console.error(err);
-            patchState(store, { loading: false });
             return of(null);
           })
         ))
@@ -42,7 +39,6 @@ export const DashboardStore = signalStore(
     // Action to fetch dog breeds
     fetchBreeds: rxMethod<void>(
       pipe(
-        tap(() => patchState(store, { loading: true })),
         switchMap(() => dogService.getBreeds().pipe(
           tap((res) => {
             let dogList: any[] = [];
@@ -52,11 +48,10 @@ export const DashboardStore = signalStore(
                 subBreeds
               }));
             }
-            patchState(store, { dogList, loading: false });
+            patchState(store, { dogList });
           }),
           catchError((err) => {
             console.error(err);
-            patchState(store, { loading: false });
             return of(null);
           })
         ))
